@@ -9,24 +9,21 @@ By projecting knowledge vectors derived from a fine-tuned small model into the p
 The provided core codes focus on the two main stages of the KLORA framework:
 
 1. **`ILP_DP.py` (Stage 2: Error-aware Adaptive LoRA Allocation)**
-   - Computes the projection-error cost matrix between the layers of the small model and the large model[cite: 139].
-   - Solves an Integer Linear Programming (ILP) problem with monotonicity constraints using a Dynamic Programming (DP) algorithm[cite: 139].
-   - Outputs the optimal monotonic layer mapping to identify the most significant layers in the large model for knowledge-informed LoRA initialization and adaptation[cite: 62].
+   - Computes the projection-error cost matrix between the layers of the small model and the large model.
+   - Solves an Integer Linear Programming (ILP) problem with monotonicity constraints using a Dynamic Programming (DP) algorithm.
+   - Outputs the optimal monotonic layer mapping to identify the most significant layers in the large model for knowledge-informed LoRA initialization and adaptation.
 
 2. **`KLoRA_Init.py` (Stage 1: Knowledge-informed LoRA Initialization)**
-   - [cite_start]Extracts a task vector (knowledge vector) from a fine-tuned small model[cite: 138].
-   - [cite_start]Factorizes the knowledge vector via Singular Value Decomposition (SVD)[cite: 138].
-   - [cite_start]Projects the decomposed matrices into the parameter space of the large model using the mappings identified in Stage 2[cite: 138].
+   - Extracts a task vector (knowledge vector) from a fine-tuned small model.
+   - Factorizes the knowledge vector via Singular Value Decomposition (SVD).
+   - Projects the decomposed matrices into the parameter space of the large model using the mappings identified in Stage 2.
    - Generates the initialized LoRA weights (`.pth` file) ready to be loaded into the target large language model.
 
 ## Installation & Dependencies
 
 Ensure you have the following core libraries installed:
-```
-```text?code_stdout&code_event_index=5
-README.md generated successfully.
 
-```bash
+```
 pip install torch transformers numpy matplotlib
 ```
 
@@ -37,15 +34,15 @@ pip install torch transformers numpy matplotlib
 The full KLORA pipeline operates in the following sequential steps:
 
 ### Step 1: Extract Target-Domain Knowledge (Small Model SFT)
-[cite_start]First, fine-tune a small model (e.g., Qwen2.5-0.5B) on your target-domain dataset for a few epochs to capture domain-specific knowledge vectors[cite: 24, 1136]. Save the fine-tuned checkpoint.
+First, fine-tune a small model (e.g., Qwen2.5-0.5B) on your target-domain dataset for a few epochs to capture domain-specific knowledge vectors. Save the fine-tuned checkpoint.
 
 ### Step 2: Determine Optimal Layer Mapping (`ILP_DP.py`)
 Run the layer allocation script to calculate the minimal projection error path between the small model and your target large model (e.g., Qwen2.5-3B).
-```bash
+```
 python ILP_DP.py
 ```
 * **Input**: Base Small Model and Base Large Model paths.
-* **Output**: A heatmap visualization (`heatmap_norm.pdf`) and the exact layer indices mapping for minimal projection error.
+* **Output**: The exact layer indices mapping for minimal projection error.
 
 ### Step 3: Initialize KLORA Weights (`KLoRA_Init.py`)
 Using the mapping from Step 2, project the fine-tuned small model's knowledge into the large model's parameter space.
